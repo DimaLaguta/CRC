@@ -1,8 +1,6 @@
+using CRC.Source.Service;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lab_6
 {
@@ -10,12 +8,55 @@ namespace lab_6
     {
         static void Main(string[] args)
         {
-            // The code provided will print ‘Hello World’ to the console.
-            // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            bool flag = true;
+            var scanner = new CRCScanner();
 
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
+            while (flag)
+            {
+                Console.Write($"1. Update CRC-code\n2. Compare CRC-code\n3. Exit\nInput: ");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                    {
+                        Console.Write($"Input path: ");
+                        var path = Console.ReadLine();
+
+                        if (scanner.IsPathExist(path))
+                        {
+                            Console.Write($"{path} files already exists in base.\nUpdate? Y|N ");
+
+                            if (Console.ReadLine().ToLower() == "n")
+                            {
+                                break;
+                            }
+                        }
+
+                        scanner.UpdateCRCStorage(path);
+
+                        break;
+                    }
+                    case "2":
+                    {
+                        Console.Write($"Input path: ");
+                        var path = Console.ReadLine();
+
+                        foreach (string result in scanner.CompareFiles(path))
+                        {
+                            Console.WriteLine(result);
+                        }
+
+                        break;
+                    }
+                    case "3":
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+
+            System.IO.File.WriteAllText("crc.json", JsonConvert.SerializeObject(scanner.Files));
+
         }
     }
 }
